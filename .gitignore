@@ -41,5 +41,5 @@ npm-debug.log
 
 # Ignore Gemini agent configurations
 /.gemini/
-
+/.cursor/
 
