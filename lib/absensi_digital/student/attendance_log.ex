@@ -1,4 +1,4 @@
-defmodule AbsensiDigital.Academy.AttendanceLog do
+defmodule AbsensiDigital.Student.AttendanceLog do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -10,7 +10,7 @@ defmodule AbsensiDigital.Academy.AttendanceLog do
     field :status, :string, default: "hadir"
 
     # Menghubungkan log ini dengan satu siswa
-    belongs_to :student, AbsensiDigital.Academy.Student
+    belongs_to :student, AbsensiDigital.Student.Student
 
     # Ini otomatis mencatat inserted_at (waktu scan)
     timestamps()

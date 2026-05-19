@@ -1,4 +1,4 @@
-defmodule AbsensiDigital.Academy.Student do
+defmodule AbsensiDigital.Student.Student do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -10,9 +10,10 @@ defmodule AbsensiDigital.Academy.Student do
     field :pairing_token, :string
     field :qr_code_data, :string
     field :is_paired, :boolean, default: false
+    field :parent_phone, :string
 
     # Relasi ke Kelas
-    belongs_to :class, AbsensiDigital.Academy.Class
+    belongs_to :class, AbsensiDigital.Student.Class
 
     timestamps()
   end
@@ -33,7 +34,7 @@ defmodule AbsensiDigital.Academy.Student do
         ) :: Ecto.Changeset.t()
   def changeset(student, attrs) do
     student
-    |> cast(attrs, [:name, :pairing_token, :qr_code_data, :is_paired, :class_id])
+    |> cast(attrs, [:name, :pairing_token, :qr_code_data, :is_paired, :class_id, :parent_phone])
     |> validate_required([:name, :class_id])
     |> maybe_generate_pairing_token()
     |> maybe_generate_qr_code_data()

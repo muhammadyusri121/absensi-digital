@@ -1,14 +1,14 @@
-defmodule AbsensiDigital.Academy do
+defmodule AbsensiDigital.Student do
   @moduledoc """
-  Konteks Academy: Menyediakan API internal untuk mengelola data
+  Konteks Student: Menyediakan API internal untuk mengelola data
   Kelas (Classes) dan Siswa (Students).
   """
 
   import Ecto.Query, warn: false
   alias AbsensiDigital.Repo
-  alias AbsensiDigital.Academy.Class
-  alias AbsensiDigital.Academy.Student
-  alias AbsensiDigital.Academy.AttendanceLog
+  alias AbsensiDigital.Student.Class
+  alias AbsensiDigital.Student.Student, as: StudentModel
+  alias AbsensiDigital.Student.AttendanceLog
 
   # ==========================================
   # LOGIKA KELAS (CLASSES)
@@ -44,6 +44,17 @@ defmodule AbsensiDigital.Academy do
           {:new_log, log_with_data}
         )
 
+        # Kirim notifikasi WA Orang Tua (Asinkron)
+        parent_phone = log_with_data.student.parent_phone
+        student_name = log_with_data.student.name
+        class_name = log_with_data.student.class.name
+
+        AbsensiDigital.Services.WhatsApp.send_attendance_notification(
+          student_name,
+          class_name,
+          parent_phone
+        )
+
         {:ok, log_with_data}
 
       error ->
@@ -57,18 +68,18 @@ defmodule AbsensiDigital.Academy do
 
   @doc "Mengambil semua daftar siswa beserta data kelasnya."
   def list_students do
-    Student
+    StudentModel
     |> Repo.all()
     # Memuat data kelas agar tidak muncul #Ecto.Association.NotLoaded
     |> Repo.preload(:class)
   end
 
   @doc "Mengambil satu siswa berdasarkan ID."
-  def get_student!(id), do: Repo.get!(Student, id)
+  def get_student!(id), do: Repo.get!(StudentModel, id)
 
   @doc "Mencari siswa berdasarkan kode QR (digunakan saat scanning)."
   def get_student_by_qr(qr_data) do
-    Student
+    StudentModel
     |> where([s], s.qr_code_data == ^qr_data or s.pairing_token == ^qr_data)
     |> Repo.one()
     |> Repo.preload(:class)
@@ -76,14 +87,26 @@ defmodule AbsensiDigital.Academy do
 
   @doc "Mencari siswa berdasarkan token pairing (digunakan oleh wali murid)."
   def get_student_by_token(token) do
-    Repo.get_by(Student, pairing_token: token)
+    Repo.get_by(StudentModel, pairing_token: token)
   end
 
   @doc "Membuat siswa baru."
   def create_student(attrs \\ %{}) do
-    %Student{}
-    |> Student.changeset(attrs)
+    %StudentModel{}
+    |> StudentModel.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc "Mengupdate data siswa."
+  def update_student(%StudentModel{} = student, attrs) do
+    student
+    |> StudentModel.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc "Menghapus data siswa."
+  def delete_student(%StudentModel{} = student) do
+    Repo.delete(student)
   end
 
   @doc "Mengubah status pairing siswa menjadi true."
@@ -91,7 +114,7 @@ defmodule AbsensiDigital.Academy do
     student = get_student!(student_id)
 
     student
-    |> Student.changeset(%{is_paired: true})
+    |> StudentModel.changeset(%{is_paired: true})
     |> Repo.update()
   end
 end

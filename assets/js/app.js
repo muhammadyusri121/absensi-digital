@@ -20,7 +20,7 @@
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/absensi_digital"
@@ -31,35 +31,105 @@ let Hooks = {}
 
 Hooks.QrScanner = {
   mounted() {
-    import("html5-qrcode").then(module => {
-      const scanner = new module.Html5QrcodeScanner("reader", { 
-        fps: 10, 
-        qrbox: { width: 250, height: 250 } 
-      });
+    console.log("[QrScanner] Hook mounted.");
+    console.log("[QrScanner] Checking Html5Qrcode class:", typeof Html5Qrcode);
+    console.log("[QrScanner] Checking mediaDevices API:", typeof navigator.mediaDevices);
 
-      this.scanner = scanner;
-      this.scanner.render((decodedText) => {
-        this.pushEvent("qr_scanned", { qr_data: decodedText });
-        this.scanner.pause(true);
-        setTimeout(() => this.scanner.resume(), 3000);
-      });
+    const readerId = "reader";
+    const html5QrCode = new Html5Qrcode(readerId);
+    this.scanner = html5QrCode;
 
-      this.handleEvent("play_sound", (data) => {
-        const soundFile = data.type === "success" ? "/sounds/success.mp3" : "/sounds/error.mp3";
-        const audio = new Audio(soundFile);
-        audio.load();
-        audio.play().catch(e => {
-          console.error("Audio play failed:", e);
-          // Jika gagal karena autoplay policy, kita bisa beri pesan di console
-          if (e.name === "NotAllowedError") {
-            console.warn("Autoplay diblokir. Silakan klik di mana saja pada halaman terlebih dahulu.");
-          }
+    const config = { 
+      fps: 10, 
+      qrbox: { width: 250, height: 250 } 
+    };
+
+    let isPaused = false;
+
+    const startCamera = () => {
+      // Clear any custom UI first
+      const readerEl = document.getElementById(readerId);
+      if (readerEl) readerEl.innerHTML = "";
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+          if (isPaused) return;
+          
+          console.log("[QrScanner] QR Scanned:", decodedText);
+          isPaused = true;
+          this.pushEvent("qr_scanned", { qr_data: decodedText });
+
+          // Re-enable after 3 seconds
+          setTimeout(() => {
+            isPaused = false;
+          }, 3000);
+        },
+        (error) => {
+          // Scan noise - quiet
+        }
+      )
+      .then(() => {
+        console.log("[QrScanner] Camera started successfully.");
+      })
+      .catch((err) => {
+        console.error("[QrScanner] Gagal mengaktifkan kamera:", err);
+        showPermissionUI();
+      });
+    };
+
+    const showPermissionUI = () => {
+      const readerEl = document.getElementById(readerId);
+      if (!readerEl) return;
+
+      readerEl.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full p-6 text-center space-y-5 animate-in fade-in duration-500">
+          <div class="p-4 rounded-brand-md bg-brand-primary/10 text-brand-primary shadow-inner">
+            <svg class="size-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </div>
+          <div class="space-y-1">
+            <p class="text-sm font-black text-brand-on-surface">Akses Kamera Diperlukan</p>
+            <p class="text-[11px] font-bold text-brand-on-surface-variant/75 max-w-[200px] mx-auto leading-relaxed">
+              Izinkan akses kamera pada perizinan browser Anda untuk mulai memindai.
+            </p>
+          </div>
+          <button id="start-camera-btn" class="px-5 py-2.5 bg-brand-primary hover:bg-brand-primary-hover text-brand-on-primary rounded-brand-md font-extrabold text-xs shadow-md shadow-brand-primary/20 active:scale-95 transition-all">
+            Aktifkan Kamera
+          </button>
+        </div>
+      `;
+
+      const btn = document.getElementById("start-camera-btn");
+      if (btn) {
+        btn.addEventListener("click", () => {
+          startCamera();
         });
+      }
+    };
+
+    // Auto-start on mount
+    startCamera();
+
+    this.handleEvent("play_sound", (data) => {
+      console.log("[QrScanner] Playing sound:", data.type);
+      const soundFile = data.type === "success" ? "/sounds/success.mp3" : "/sounds/error.mp3";
+      const audio = new Audio(soundFile);
+      audio.load();
+      audio.play().catch(e => {
+        console.warn("[QrScanner] Audio play failed (autoplay blocked):", e);
       });
     });
   },
   destroyed() {
-    if (this.scanner) this.scanner.clear();
+    if (this.scanner) {
+      this.scanner.stop().catch(err => {
+        console.error("Failed to stop scanner on destroy:", err);
+      });
+    }
   }
 }
 

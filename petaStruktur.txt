@@ -1,0 +1,31 @@
+absensi-digital/
+├── lib/
+│   ├── absensi_digital/                      <--- [BACKEND - DOMAIN CONTEXTS]
+│   │   ├── student.ex                        <--- Konteks Utama Siswa & Kelas (Pengganti academy.ex)
+│   │   └── student/                          <--- Folder Schemas Konteks Student
+│   │       ├── student.ex                    <--- Ecto Schema untuk data Siswa
+│   │       ├── class.ex                      <--- Ecto Schema untuk data Kelas
+│   │       └── attendance_log.ex             <--- Ecto Schema untuk Log Absensi
+│   │
+│   └── absensi_digital_web/                  <--- [FRONTEND - USER INTERFACES]
+│       ├── controllers/                      <--- [A. STRUKTUR DEAD VIEW]
+│       │   ├── student_controller.ex         <--- Controller Utama (CRUD logic, redirects)
+│       │   ├── student_html.ex               <--- HTML View Companion untuk merender template
+│       │   └── student_html/                 <--- Folder Template UI HEEx (Siswa)
+│       │       ├── index.html.heex           <--- Halaman utama (Tabel siswa & Tombol aksi)
+│       │       ├── new.html.heex             <--- Halaman formulir pendaftaran baru
+│       │       ├── edit.html.heex            <--- Halaman formulir edit siswa
+│       │       └── student_form.html.heex    <--- Formulir reuse (Nama, kelas, token)
+│       │
+│       ├── live/                             <--- [B. STRUKTUR LIVE VIEW]
+│       │   ├── dashboard_live.ex             <--- Dashboard Sekolah (Real-time monitoring)
+│       │   └── scan_live.ex                  <--- Layar Mesin Scan QR Code Presensi
+│       │
+│       ├── components/                       <--- [C. KOMPONEN UI GLOBAL]
+│       │   ├── layouts.ex                    <--- Premium Header & Sidebar Layout (Stitch design)
+│       │   └── core_components.ex            <--- Komponen bawaan Phoenix (Form input, modal, dll.)
+│       │
+│       └── router.ex                         <--- Konfigurasi Rute Aplikasi (Rute REST & Rute Live)
+│
+├── priv/repo/
+│   └── seeds.exs                             <--- Script Seeding data awal Kelas & Siswa

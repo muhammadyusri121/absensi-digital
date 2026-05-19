@@ -17,9 +17,12 @@ defmodule AbsensiDigitalWeb.Router do
   scope "/", AbsensiDigitalWeb do
     pipe_through :browser
 
-    live_session :default, on_mount: [{AbsensiDigitalWeb.Nav, :set_current_scope}] do
+    resources "/student", StudentController
+
+    live_session :default,
+      layout: {AbsensiDigitalWeb.Layouts, :app},
+      on_mount: [{AbsensiDigitalWeb.Nav, :set_current_scope}] do
       live "/", DashboardLive
-      live "/student", StudentLive
       live "/scan", ScanLive
       live "/dashboard", DashboardLive
     end

@@ -1,6 +1,6 @@
 defmodule AbsensiDigitalWeb.ScanLive do
   use AbsensiDigitalWeb, :live_view
-  alias AbsensiDigital.Academy
+  alias AbsensiDigital.Student, as: StudentContext
 
   def mount(_params, _session, socket) do
     {:ok, assign(socket, last_student: nil, error: nil)}
@@ -8,7 +8,7 @@ defmodule AbsensiDigitalWeb.ScanLive do
 
   @spec handle_event(<<_::80>>, map(), any()) :: {:noreply, map()}
   def handle_event("qr_scanned", %{"qr_data" => data}, socket) do
-    case Academy.get_student_by_qr(data) do
+    case StudentContext.get_student_by_qr(data) do
       nil ->
         {:noreply,
          socket
@@ -18,7 +18,7 @@ defmodule AbsensiDigitalWeb.ScanLive do
 
       student ->
         # Simpan ke database
-        case Academy.record_attendance(student) do
+        case StudentContext.record_attendance(student) do
           {:ok, _log} ->
             {:noreply,
              socket
@@ -62,7 +62,7 @@ defmodule AbsensiDigitalWeb.ScanLive do
               class="w-full h-full object-cover"
             >
             </div>
-            
+
     <!-- Scan Overlay -->
             <div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
               <div class="size-64 border-2 border-brand-primary/20 rounded-brand-md relative">

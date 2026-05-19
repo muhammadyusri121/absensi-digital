@@ -70,6 +70,9 @@ config :phoenix, :json_library, Jason
 # Configure Time Zone Database
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 
+# WhatsApp API Fonnte Token (Fallback to env var)
+config :absensi_digital, fonnte_token: System.get_env("FONNTE_TOKEN")
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

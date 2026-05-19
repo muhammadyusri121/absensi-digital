@@ -1,0 +1,36 @@
+<.form :let={f} for={@changeset} action={@action}>
+  <div class="space-y-6">
+    <.input field={f[:name]} type="text" label="Nama Lengkap" placeholder="Contoh: Budi Santoso" />
+    
+    <.input
+      field={f[:class_id]}
+      type="select"
+      label="Kelas"
+      options={Enum.map(@classes, &{&1.name, &1.id})}
+      prompt="Pilih Kelas"
+    />
+
+    <.input
+      field={f[:parent_phone]}
+      type="text"
+      label="Nomor WhatsApp Orang Tua"
+      placeholder="Contoh: 081234567890"
+    />
+
+    <.input
+      field={f[:pairing_token]}
+      type="text"
+      label="Token Pairing (Opsional)"
+      placeholder="Biarkan kosong untuk generate otomatis"
+    />
+  </div>
+  
+  <div class="mt-10 flex flex-col sm:flex-row justify-end gap-4">
+    <.link href={~p"/student"} class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-brand-surface-container border border-brand-outline-variant/60 text-brand-on-surface hover:bg-brand-surface-container-high active:scale-95 transition-all duration-300 rounded-brand-md font-bold text-sm">
+      Batal
+    </.link>
+    <.button type="submit" variant="primary" class="w-full sm:w-auto">
+      {@submit_text}
+    </.button>
+  </div>
+</.form>

@@ -1,0 +1,24 @@
+<div class="max-w-2xl mx-auto px-4 py-8 lg:py-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+  <div class="mb-8">
+    <.link href={~p"/student"} class="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-brand-on-surface-variant hover:text-brand-primary transition-colors">
+      <.icon name="hero-arrow-left" class="size-4" />
+      Kembali ke Daftar
+    </.link>
+  </div>
+
+  <div class="bg-brand-surface-container-lowest border border-brand-outline-variant/50 rounded-brand-lg p-8 sm:p-12 shadow-sm">
+    <div class="space-y-2 mb-10">
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-brand-on-surface">Edit Data Siswa</h1>
+      <p class="text-brand-on-surface-variant text-sm font-medium">
+        Perbarui informasi profil, kelas, dan token pairing untuk siswa <strong>{@student.name}</strong>.
+      </p>
+    </div>
+
+    <.student_form 
+      changeset={@changeset} 
+      action={~p"/student/#{@student.id}"} 
+      classes={@classes} 
+      submit_text="Perbarui Data Siswa" 
+    />
+  </div>
+</div>

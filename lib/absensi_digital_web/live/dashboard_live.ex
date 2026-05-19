@@ -1,7 +1,7 @@
 defmodule AbsensiDigitalWeb.DashboardLive do
   use AbsensiDigitalWeb, :live_view
   alias AbsensiDigital.Repo
-  alias AbsensiDigital.Academy.AttendanceLog
+  alias AbsensiDigital.Student.AttendanceLog
 
   def mount(_params, _session, socket) do
     if connected?(socket) do

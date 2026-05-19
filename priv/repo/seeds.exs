@@ -1,6 +1,6 @@
 alias AbsensiDigital.Repo
-alias AbsensiDigital.Academy.Class
-alias AbsensiDigital.Academy.Student
+alias AbsensiDigital.Student.Class
+alias AbsensiDigital.Student.Student
 
 # Bersihkan data lama agar tidak duplikat saat dijalankan ulang
 Repo.delete_all(Student)
@@ -17,6 +17,7 @@ students = [
     class_id: kelas_rpl.id,
     pairing_token: "XY1234",
     qr_code_data: "STD-XY1234",
+    parent_phone: "081234567890",
     is_paired: false
   },
   %{
@@ -24,6 +25,7 @@ students = [
     class_id: kelas_tkj.id,
     pairing_token: "TKJ001",
     qr_code_data: "STD-TKJ001",
+    parent_phone: "089876543210",
     is_paired: true
   }
 ]

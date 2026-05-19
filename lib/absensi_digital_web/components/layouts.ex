@@ -36,42 +36,50 @@ defmodule AbsensiDigitalWeb.Layouts do
   def app(assigns) do
     ~H"""
     <div class="flex h-screen bg-brand-background font-brand text-brand-on-surface antialiased overflow-hidden">
-      <!-- Sidebar -->
-      <aside class="w-64 bg-brand-surface-container-low border-r border-brand-outline-variant flex flex-col hidden md:flex">
-        <div class="p-8">
-          <a href="/" class="flex items-center gap-3 group">
-            <div class="bg-brand-primary p-2 rounded-brand-md shadow-xl shadow-brand-primary/20 transition-transform group-hover:scale-110">
+      <!-- Sidebar Desktop -->
+      <aside class="w-64 bg-brand-surface-container-low border-r-[0.5px] border-brand-outline-variant/60 flex flex-col hidden md:flex">
+        <!-- Logo / Branding -->
+        <div class="p-6 border-b-[0.5px] border-brand-outline-variant/40">
+          <a href="/" class="flex items-center gap-3.5 group">
+            <div class="bg-brand-primary p-2.5 rounded-brand-md shadow-xl shadow-brand-primary/20 transition-transform group-hover:scale-105 duration-300">
               <.icon name="hero-academic-cap" class="size-6 text-brand-on-primary" />
             </div>
-            <span class="text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-brand-primary to-brand-secondary">
-              ABSENSI
-            </span>
+            <div class="flex flex-col">
+              <span class="text-base font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-brand-primary to-brand-secondary leading-tight">
+                ABSENSI DIGITAL
+              </span>
+              <span class="text-[9px] font-extrabold text-brand-on-surface-variant/60 tracking-widest uppercase leading-none mt-0.5">
+                School Portal
+              </span>
+            </div>
           </a>
         </div>
 
-        <nav class="flex-1 px-4 space-y-1.5 py-4">
-          <div class="text-[10px] uppercase tracking-widest text-brand-on-surface-variant font-black px-4 mb-2">
-            Main Menu
+        <!-- Navigation Links -->
+        <nav class="flex-1 px-4 space-y-1.5 py-6">
+          <div class="text-[10px] uppercase tracking-widest text-brand-on-surface-variant/50 font-black px-4 mb-3">
+            Menu Utama
           </div>
           <.nav_link navigate={~p"/"} icon="hero-squares-2x2" active={@current_scope == :dashboard}>
             Dashboard
           </.nav_link>
-          <.nav_link navigate={~p"/student"} icon="hero-users" active={@current_scope == :student}>
-            Students
+          <.nav_link href={~p"/student"} icon="hero-users" active={@current_scope == :student}>
+            Data Siswa
           </.nav_link>
           <.nav_link navigate={~p"/scan"} icon="hero-qr-code" active={@current_scope == :scan}>
-            Scan QR
+            Scan Presensi
           </.nav_link>
         </nav>
 
-        <div class="p-6 border-t border-brand-outline-variant bg-brand-surface-container-low/50">
-          <div class="flex items-center gap-4 mb-4">
-            <div class="size-10 rounded-brand-md bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center text-brand-on-primary font-black shadow-lg shadow-brand-primary/20">
+        <!-- Sidebar Footer -->
+        <div class="p-5 border-t-[0.5px] border-brand-outline-variant/60 bg-brand-surface-container-low/50">
+          <div class="bg-brand-surface-container-lowest border-[0.5px] border-brand-outline-variant/60 rounded-brand-md p-4 mb-4 flex items-center gap-3">
+            <div class="size-9 rounded-brand-md bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center text-brand-on-primary font-black shadow-md shadow-brand-primary/10">
               A
             </div>
-            <div>
-              <p class="text-sm font-black tracking-tight">Admin</p>
-              <p class="text-[10px] text-brand-on-surface-variant font-bold uppercase tracking-widest">
+            <div class="flex-1 overflow-hidden">
+              <p class="text-xs font-black tracking-tight truncate">Administrator</p>
+              <p class="text-[9px] text-brand-success font-bold uppercase tracking-widest truncate">
                 Online
               </p>
             </div>
@@ -79,30 +87,155 @@ defmodule AbsensiDigitalWeb.Layouts do
           <.theme_toggle />
         </div>
       </aside>
-      
-    <!-- Main Content -->
-      <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Topbar (Mobile) -->
-        <header class="md:hidden flex items-center justify-between p-4 bg-brand-surface/80 backdrop-blur-md border-b border-brand-outline-variant sticky top-0 z-40">
-          <a href="/" class="flex items-center gap-2">
-            <div class="bg-brand-primary p-1.5 rounded-brand-sm">
-              <.icon name="hero-academic-cap" class="size-5 text-brand-on-primary" />
-            </div>
-            <span class="font-black tracking-tighter text-lg bg-clip-text text-transparent bg-gradient-to-r from-brand-primary to-brand-secondary">
-              ABSENSI
-            </span>
-          </a>
-          <div class="flex items-center gap-3">
-            <.theme_toggle />
-            <button class="p-2 rounded-brand-sm bg-brand-surface-container border border-brand-outline-variant">
-              <.icon name="hero-bars-3" class="size-6 text-brand-on-surface" />
+
+      <!-- Mobile Sidebar Drawer (Slide-out menu) -->
+      <div id="mobile-sidebar-drawer" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+        <!-- Backdrop overlay -->
+        <div 
+          phx-click={JS.hide(to: "#mobile-sidebar-drawer")}
+          class="fixed inset-0 bg-brand-on-surface/40 backdrop-blur-sm transition-opacity duration-300"
+        ></div>
+
+        <!-- Drawer Content -->
+        <div class="fixed inset-y-0 left-0 w-72 bg-brand-surface-container-low flex flex-col p-6 shadow-2xl border-r-[0.5px] border-brand-outline-variant/60 animate-in slide-in-from-left duration-300">
+          <!-- Close button & Logo -->
+          <div class="flex items-center justify-between pb-6 border-b border-brand-outline-variant/40">
+            <a href="/" class="flex items-center gap-3 group">
+              <div class="bg-brand-primary p-2 rounded-brand-md shadow-lg shadow-brand-primary/20">
+                <.icon name="hero-academic-cap" class="size-5 text-brand-on-primary" />
+              </div>
+              <span class="text-base font-black tracking-tight text-brand-on-surface">
+                Absensi<span class="text-brand-primary">Digital</span>
+              </span>
+            </a>
+            <button 
+              type="button" 
+              phx-click={JS.hide(to: "#mobile-sidebar-drawer")}
+              class="p-1.5 rounded-brand-md bg-brand-surface-container border-[0.5px] border-brand-outline-variant/60 text-brand-on-surface-variant hover:text-brand-on-surface"
+            >
+              <.icon name="hero-x-mark" class="size-5" />
             </button>
+          </div>
+
+          <!-- Navigation inside Mobile Drawer -->
+          <nav class="flex-1 space-y-1.5 py-6">
+            <div class="text-[10px] uppercase tracking-widest text-brand-on-surface-variant/50 font-black px-4 mb-3">
+              Menu Utama
+            </div>
+            <.nav_link navigate={~p"/"} icon="hero-squares-2x2" active={@current_scope == :dashboard} phx-click={JS.hide(to: "#mobile-sidebar-drawer")}>
+              Dashboard
+            </.nav_link>
+            <.nav_link href={~p"/student"} icon="hero-users" active={@current_scope == :student} phx-click={JS.hide(to: "#mobile-sidebar-drawer")}>
+              Data Siswa
+            </.nav_link>
+            <.nav_link navigate={~p"/scan"} icon="hero-qr-code" active={@current_scope == :scan} phx-click={JS.hide(to: "#mobile-sidebar-drawer")}>
+              Scan Presensi
+            </.nav_link>
+          </nav>
+
+          <!-- Footer inside Mobile Drawer -->
+          <div class="pt-6 border-t border-brand-outline-variant/60 bg-brand-surface-container-low/50">
+            <div class="bg-brand-surface-container-lowest border-[0.5px] border-brand-outline-variant/60 rounded-brand-md p-4 mb-4 flex items-center gap-3">
+              <div class="size-9 rounded-brand-md bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center text-brand-on-primary font-black shadow-md shadow-brand-primary/10">
+                A
+              </div>
+              <div class="flex-1 overflow-hidden">
+                <p class="text-xs font-black tracking-tight truncate">Administrator</p>
+                <p class="text-[9px] text-brand-success font-bold uppercase tracking-widest truncate">Online</p>
+              </div>
+            </div>
+            <.theme_toggle />
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Container -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Topbar/Header -->
+        <header class="bg-brand-surface-container-lowest/80 backdrop-blur-md border-b-[0.5px] border-brand-outline-variant/60 sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+          <!-- Mobile Menu Button & Brand -->
+          <div class="flex items-center gap-3 md:hidden">
+            <button
+              type="button"
+              phx-click={JS.show(to: "#mobile-sidebar-drawer")}
+              class="p-2.5 rounded-brand-md bg-brand-surface-container border-[0.5px] border-brand-outline-variant/60 text-brand-on-surface hover:bg-brand-surface-container-high transition-colors"
+            >
+              <.icon name="hero-bars-3" class="size-5" />
+            </button>
+            <a href="/" class="flex items-center gap-2">
+              <div class="bg-brand-primary p-1.5 rounded-brand-md shadow-lg shadow-brand-primary/20">
+                <.icon name="hero-academic-cap" class="size-5 text-brand-on-primary" />
+              </div>
+              <span class="font-extrabold text-base tracking-tight text-brand-on-surface">
+                Absensi<span class="text-brand-primary">Digital</span>
+              </span>
+            </a>
+          </div>
+
+          <!-- Page Title & Subtitle (Desktop only) -->
+          <div class="hidden md:flex flex-col">
+            <h2 class="text-lg font-bold tracking-tight text-brand-on-surface">
+              <%= case @current_scope do %>
+                <% :dashboard -> %>Ringkasan Dasbor Portal
+                <% :student -> %>Kelola Data Siswa
+                <% :scan -> %>Mesin Scan Presensi QR
+                <% _ -> %>Absensi Digital Sekolah
+              <% end %>
+            </h2>
+            <p class="text-xs text-brand-on-surface-variant/80 font-medium">
+              <%= case @current_scope do %>
+                <% :dashboard -> %>Pantau tingkat kehadiran, riwayat presensi, dan aktivitas terbaru.
+                <% :student -> %>Lihat daftar siswa, tambahkan siswa baru, dan kelola ID Kartu.
+                <% :scan -> %>Dekatkan kode QR kartu siswa ke kamera untuk mencatat presensi hari ini.
+                <% _ -> %>Sistem monitoring kehadiran sekolah berbasis digital.
+              <% end %>
+            </p>
+          </div>
+
+          <!-- Actions & Indicators -->
+          <div class="flex items-center gap-4">
+            <!-- Search Quick Lens (Desktop only) -->
+            <div class="hidden lg:flex items-center gap-2 bg-brand-surface-container-low border-[0.5px] border-brand-outline-variant/60 rounded-brand-md px-3.5 py-1.5 w-72 text-brand-on-surface-variant/60 hover:border-brand-primary/40 transition-colors cursor-pointer group">
+              <.icon name="hero-magnifying-glass-micro" class="size-4 text-brand-on-surface-variant/40 group-hover:text-brand-primary transition-colors" />
+              <span class="text-xs font-semibold">Cari siswa, kelas, or status...</span>
+            </div>
+
+            <!-- Real-time Date Panel (Desktop only) -->
+            <div class="hidden sm:flex items-center gap-2 bg-brand-surface-container border-[0.5px] border-brand-outline-variant/60 rounded-brand-md px-3 py-1.5 text-xs font-bold text-brand-on-surface-variant">
+              <.icon name="hero-calendar" class="size-4 text-brand-primary" />
+              <span id="current-date-display" phx-update="ignore">
+                <%= DateTime.utc_now() |> DateTime.add(7, :hour) |> Calendar.strftime("%A, %d %B %Y") %>
+              </span>
+            </div>
+
+            <!-- Notifications Badge -->
+            <button class="relative p-2 rounded-brand-md bg-brand-surface-container hover:bg-brand-surface-container-high text-brand-on-surface border-[0.5px] border-brand-outline-variant/60 transition-colors">
+              <.icon name="hero-bell" class="size-5" />
+              <span class="absolute top-1 right-1 size-2 rounded-full bg-brand-error animate-ping"></span>
+              <span class="absolute top-1 right-1 size-2 rounded-full bg-brand-error"></span>
+            </button>
+
+            <!-- Profile Info (Desktop only) -->
+            <div class="hidden md:flex items-center gap-2 border-l border-brand-outline-variant/60 pl-4">
+              <div class="size-9 rounded-brand-md bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center text-brand-on-primary font-black shadow-md shadow-brand-primary/10">
+                A
+              </div>
+              <div class="flex flex-col text-left">
+                <span class="text-xs font-extrabold text-brand-on-surface leading-tight">Admin Akademik</span>
+                <span class="text-[9px] font-black text-brand-success uppercase tracking-widest leading-none">Online</span>
+              </div>
+            </div>
           </div>
         </header>
 
+        <!-- Main Content Area -->
         <main class="flex-1 overflow-y-auto p-6 lg:p-12 bg-brand-background">
-          <div class="max-w-[1280px] mx-auto">
-            {render_slot(@inner_block)}
+          <div class="max-w-[1280px] mx-auto animate-in fade-in duration-300">
+            <%= if assigns[:inner_block] do %>
+              {render_slot(@inner_block)}
+            <% else %>
+              {@inner_content}
+            <% end %>
           </div>
         </main>
       </div>
@@ -112,20 +245,23 @@ defmodule AbsensiDigitalWeb.Layouts do
     """
   end
 
-  attr :navigate, :string, required: true
+  attr :navigate, :string, default: nil
+  attr :href, :string, default: nil
   attr :icon, :string, required: true
   attr :active, :boolean, default: false
+  attr :rest, :global
   slot :inner_block, required: true
 
   defp nav_link(assigns) do
     ~H"""
     <.link
-      navigate={@navigate}
+      {if @href, do: %{href: @href}, else: %{navigate: @navigate}}
+      {@rest}
       class={[
         "flex items-center gap-3 px-4 py-3 rounded-brand-md transition-all duration-300 group",
         if(@active,
           do:
-            "bg-brand-primary text-brand-on-primary shadow-lg shadow-brand-primary/25 translate-x-1",
+            "bg-brand-primary text-brand-on-primary shadow-lg shadow-brand-primary/20 translate-x-1",
           else:
             "hover:bg-brand-surface-container text-brand-on-surface-variant hover:text-brand-on-surface hover:translate-x-1"
         )
