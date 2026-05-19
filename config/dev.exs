@@ -91,5 +91,12 @@ config :phoenix_live_view,
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
-# WhatsApp API Fonnte Token
-config :absensi_digital, fonnte_token: "jhHVVFkAc5H2HQG4XidZ"
+# WhatsApp API Fonnte Token (Default fallback)
+config :absensi_digital, fonnte_token: "MOCK_TOKEN"
+
+# Mengimpor konfigurasi rahasia lokal (dev.secret.exs) jika ada.
+# File ini telah diabaikan oleh Git (.gitignore) untuk mencegah kebocoran kredensial.
+secret_path = Path.expand("dev.secret.exs", __DIR__)
+if File.exists?(secret_path) do
+  import_config "dev.secret.exs"
+end

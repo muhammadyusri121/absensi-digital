@@ -35,3 +35,7 @@ absensi_digital-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Ignore sensitive config secret files and env files
+/config/*.secret.exs
+/.env
+
