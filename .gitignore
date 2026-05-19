@@ -39,3 +39,7 @@ npm-debug.log
 /config/*.secret.exs
 /.env
 
+# Ignore Gemini agent configurations
+/.gemini/
+
+
